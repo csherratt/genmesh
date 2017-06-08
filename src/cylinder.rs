@@ -14,15 +14,14 @@
 
 use std::f32::consts::PI;
 use Vertex;
-use super::{Quad, Polygon, Triangle};
+use super::{Quad, Polygon, Triangle, MapVertex};
 use super::generators::{SharedVertex, IndexedPolygon};
 
 /// Represents a cylinder with radius of 1, height of 2,
 /// and centered at (0, 0, 0) pointing up (to 0, 0, 1).
 #[derive(Clone, Copy)]
 pub struct Cylinder {
-    u: usize,
-    h: isize,
+    idx: usize,
     sub_u: usize,
     sub_h: isize,
 }
@@ -43,8 +42,7 @@ impl Cylinder {
     pub fn new(u: usize) -> Self {
         assert!(u > 1);
         Cylinder {
-            u: 0,
-            h: -1,
+            idx: 0,
             sub_u: u,
             sub_h: 1,
         }
@@ -56,8 +54,7 @@ impl Cylinder {
     pub fn subdivide(u: usize, h: usize) -> Self {
         assert!(u > 1 && h > 0);
         Cylinder {
-            u: 0,
-            h: -1,
+            idx: 0,
             sub_u: u,
             sub_h: h as isize,
         }
@@ -88,40 +85,19 @@ impl Iterator for Cylinder {
     type Item = Polygon<Vertex>;
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let n = self.sub_u * (1 + self.sub_h - self.h) as usize - self.u;
+        let n = self.indexed_polygon_count() - self.idx;
         (n, Some(n))
     }
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.u == self.sub_u {
-            if self.h >= self.sub_h {
-                return None;
-            }
-            self.u = 0;
-            self.h += 1;
+        if self.idx < self.indexed_polygon_count() {
+            let idx = self.idx;
+            self.idx += 1;
+            Some(self.indexed_polygon(idx)
+                     .map_vertex(|i| self.shared_vertex(i)))
+        } else {
+            None
         }
-
-        let u = self.u;
-        self.u += 1;
-        // mathematically, reaching `u + 1 == sub_u` should trivially resolve,
-        // because sin(2pi) == sin(0), but rounding errors go in the way.
-        let u1 = self.u % self.sub_u;
-
-        Some(if self.h < 0 {
-                 let x = self.vert(u, self.h);
-                 let y = self.vert(u1, self.h);
-                 Polygon::PolyTri(Triangle::new(x, BOT, y))
-             } else if self.h == self.sub_h {
-                 let x = self.vert(u, self.h + 1);
-                 let y = self.vert(u1, self.h + 1);
-                 Polygon::PolyTri(Triangle::new(x, y, TOP))
-             } else {
-                 let x = self.vert(u, self.h);
-                 let y = self.vert(u1, self.h);
-                 let z = self.vert(u1, self.h + 1);
-                 let w = self.vert(u, self.h + 1);
-                 Polygon::PolyQuad(Quad::new(x, y, z, w))
-             })
     }
 }
 
