@@ -16,8 +16,14 @@ use std::f32::consts::{self, FRAC_1_SQRT_2};
 
 use super::{Triangle, Vertex, MapVertex};
 use super::generators::{SharedVertex, IndexedPolygon};
+use texture_coord::UVCircle;
 
-
+/// this gap is used to avoid texture bleeding between faces
+/// of the primitive.
+const UV_GAP: f32 = 0.01;
+const UV_TOP_CENTER: [f32; 2] = [0.25 - UV_GAP, 0.25];
+const UV_BOTTOM_CENTER: [f32; 2] = [0.25 + UV_GAP, 0.25];
+const UV_RADIUS: f32 = 0.25 - UV_GAP;
 const TWO_PI: f32 = consts::PI * 2.;
 
 #[derive(Debug)]
@@ -60,6 +66,7 @@ impl Cone {
                     normal: [pos.cos() * FRAC_1_SQRT_2,
                              pos.sin() * FRAC_1_SQRT_2,
                              -FRAC_1_SQRT_2],
+                    uv: UV_TOP_CENTER,
                 }
             }
             VertexSection::TopRadius(i) => {
@@ -69,6 +76,7 @@ impl Cone {
                     normal: [pos.cos() * FRAC_1_SQRT_2,
                              pos.sin() * FRAC_1_SQRT_2,
                              -FRAC_1_SQRT_2],
+                    uv: UVCircle::new(UV_TOP_CENTER, UV_RADIUS).coord(pos)
                 }
             }
             VertexSection::BottomRadius(i) => {
@@ -76,12 +84,14 @@ impl Cone {
                 Vertex {
                     pos: [pos.cos(), pos.sin(), -1.],
                     normal: [0., 0., -1.],
+                    uv: UVCircle::new(UV_BOTTOM_CENTER, UV_RADIUS).coord(pos)
                 }
             }
             VertexSection::BottomCenter => {
                 Vertex {
                     pos: [0., 0., -1.],
                     normal: [0., 0., -1.],
+                    uv: UV_BOTTOM_CENTER,
                 }
             }
         }

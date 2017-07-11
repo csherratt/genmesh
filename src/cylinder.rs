@@ -16,6 +16,14 @@ use std::f32::consts::PI;
 use Vertex;
 use super::{Quad, Polygon, Triangle, MapVertex};
 use super::generators::{SharedVertex, IndexedPolygon};
+use texture_coord::{UVRect, UVCircle};
+
+/// this gap is used to avoid texture bleeding between faces
+/// of the primitive.
+const UV_GAP: f32 = 0.01;
+const UV_TOP_CENTER: [f32; 2] = [0.25 - UV_GAP, 0.25 - UV_GAP];
+const UV_BOTTOM_CENTER: [f32; 2] = [0.25 - UV_GAP, 0.75 + UV_GAP];
+const UV_RADIUS: f32 = 0.25 - UV_GAP;
 
 /// Represents a cylinder with radius of 1, height of 2,
 /// and centered at (0, 0, 0) pointing up (to 0, 0, 1).
@@ -25,16 +33,6 @@ pub struct Cylinder {
     sub_u: usize,
     sub_h: isize,
 }
-
-const TOP: Vertex = Vertex {
-    pos: [0., 0., 1.],
-    normal: [0., 0., 1.],
-};
-
-const BOT: Vertex = Vertex {
-    pos: [0., 0., -1.],
-    normal: [0., 0., -1.],
-};
 
 impl Cylinder {
     /// Create a new cylinder.
@@ -62,21 +60,30 @@ impl Cylinder {
 
     fn vert(&self, u: usize, h: isize) -> Vertex {
         debug_assert!(u <= self.sub_u);
-        let a = (u as f32 / self.sub_u as f32) * PI * 2.;
+        let u_per = u as f32 / self.sub_u as f32;
+        let h_per = u as f32 / self.sub_u as f32;
+        let a = u_per * PI * 2.;
         let n = [a.cos(), a.sin(), 0.];
-        let (hc, normal) = if h < 0 {
+        let (hc, normal, uv) = if h < 0 {
+            // bottom
             debug_assert_eq!(h, -1);
-            (0, [0., 0., -1.])
+            let uv = UVCircle::new(UV_BOTTOM_CENTER, UV_RADIUS).coord(a);
+            (0, [0., 0., -1.], uv)
         } else if h > self.sub_h {
+            // top 
             debug_assert_eq!(h, self.sub_h + 1);
-            (self.sub_h, [0., 0., 1.])
+            let uv = UVCircle::new(UV_TOP_CENTER, UV_RADIUS).coord(a);
+            (self.sub_h, [0., 0., 1.], uv)
         } else {
-            (h, n)
+            // side walls
+            let uv = UVRect::new([0., 0.5 + UV_GAP], [1.0, 0.5 - UV_GAP]).coord([u_per, h_per]);
+            (h, n, uv)
         };
         let z = (hc as f32 / self.sub_h as f32) * 2. - 1.;
         Vertex {
             pos: [n[0], n[1], z],
             normal,
+            uv,
         }
     }
 }
@@ -104,9 +111,17 @@ impl Iterator for Cylinder {
 impl SharedVertex<Vertex> for Cylinder {
     fn shared_vertex(&self, idx: usize) -> Vertex {
         if idx == 0 {
-            BOT
+            Vertex {
+                pos: [0., 0., -1.],
+                normal: [0., 0., -1.],
+                uv: UV_BOTTOM_CENTER,
+            }
         } else if idx == self.shared_vertex_count() - 1 {
-            TOP
+            Vertex {
+                pos: [0., 0., 1.],
+                normal: [0., 0., 1.],
+                uv: UV_TOP_CENTER,
+            }
         } else {
             // skip the bottom center
             let idx = idx - 1;

@@ -70,8 +70,10 @@ impl Iterator for Torus {
 impl SharedVertex<Vertex> for Torus {
     fn shared_vertex(&self, idx: usize) -> Vertex {
         let (h, u) = ((idx / self.tubular_segments) as f32, (idx % self.tubular_segments) as f32);
-        let alpha = u * 2. * PI / self.tubular_segments as f32;
-        let beta = h * 2. * PI / self.radial_segments as f32;
+        let u_per = u / self.tubular_segments as f32;
+        let h_per = h / self.tubular_radius as f32;
+        let alpha = u_per * 2. * PI;
+        let beta = h_per * 2. * PI;
         let gamma = self.radius + self.tubular_radius * alpha.cos();
 
         Vertex {
@@ -83,6 +85,7 @@ impl SharedVertex<Vertex> for Torus {
                                  -alpha.cos() * beta.sin())
                     .normalize()
                     .into(),
+            uv: [u_per, h_per]
         }
     }
 

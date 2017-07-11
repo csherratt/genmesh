@@ -53,6 +53,8 @@ mod plane;
 mod sphere;
 mod torus;
 
+mod texture_coord;
+
 /// A collection of utilties that can be used to build
 /// meshes programmatically.
 pub mod generators {
@@ -69,6 +71,9 @@ pub mod generators {
 pub type Position = mint::Vector3<f32>;
 /// Common vertex normal type.
 pub type Normal = mint::Vector3<f32>;
+/// Common vertex UV coordinate (texture coordinate)
+pub type UV = mint::Vector2<f32>;
+
 /// Common vertex type.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Vertex {
@@ -76,4 +81,6 @@ pub struct Vertex {
     pub pos: Position,
     /// Vertex normal
     pub normal: Normal,
+    /// Vertex UV, texture coordinate
+    pub uv: UV
 }

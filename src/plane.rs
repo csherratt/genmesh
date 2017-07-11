@@ -53,11 +53,14 @@ impl Plane {
     fn vert(&self, x: usize, y: usize) -> Vertex {
         let sx = self.subdivide_x as f32;
         let sy = self.subdivide_y as f32;
+        let tx = x as f32 / sx;
+        let ty = y as f32 / sy;
         let x = (2. / sx) * x as f32 - 1.;
         let y = (2. / sy) * y as f32 - 1.;
         Vertex {
             pos: [x, y, 0.0],
             normal: [0., 0., 1.],
+            uv: [tx, ty]
         }
     }
 }

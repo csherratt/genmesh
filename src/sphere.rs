@@ -42,11 +42,13 @@ impl SphereUV {
     }
 
     fn vert(&self, u: usize, v: usize) -> Vertex {
-        let u = (u as f32 / self.sub_u as f32) * PI * 2.;
-        let v = (v as f32 / self.sub_v as f32) * PI;
+        let u_per = u as f32 / self.sub_u as f32;
+        let v_per = v as f32 / self.sub_v as f32;
+        let u = u_per * PI * 2.;
+        let v = v_per * PI;
 
         let p = [u.cos() * v.sin(), u.sin() * v.sin(), v.cos()];
-        Vertex { pos: p, normal: p }
+        Vertex { pos: p, normal: p, uv: [u_per, v_per] }
     }
 }
 
