@@ -60,7 +60,7 @@ impl Plane {
         Vertex {
             pos: [x, y, 0.0],
             normal: [0., 0., 1.],
-            uv: [tx, ty]
+            uv: [tx, ty],
         }
     }
 }

@@ -41,7 +41,7 @@ impl Cube {
         };
         let z = match idx {
             0 | 3...4 | 7...8 | 11...12 | 15...19 => 1.,
-            _ => -1. 
+            _ => -1., 
         };
         [x, y, z]
     }
@@ -67,22 +67,23 @@ impl Cube {
         const HEIGHT: f32 = 1. / 3.;
 
         let rect = UVRect::new(match idx {
-            0...3 => [HEIGHT, 0.],
-            4...7 => [HEIGHT, WIDTH],
-            8...11 => [HEIGHT, WIDTH * 2.],
-            12...15 => [HEIGHT, WIDTH * 3.],
-            16...19 => [HEIGHT * 2., WIDTH],
-            20...23 =>  [0., WIDTH],
-            _ => return [0., 0.],
-            //_ => panic!("idx {} is out of range 0..24", idx)
-        }, [WIDTH, HEIGHT]);
+                                   0...3 => [HEIGHT, 0.],
+                                   4...7 => [HEIGHT, WIDTH],
+                                   8...11 => [HEIGHT, WIDTH * 2.],
+                                   12...15 => [HEIGHT, WIDTH * 3.],
+                                   16...19 => [HEIGHT * 2., WIDTH],
+                                   20...23 => [0., WIDTH],
+                                   _ => return [0., 0.],
+                                   //_ => panic!("idx {} is out of range 0..24", idx)
+                               },
+                               [WIDTH, HEIGHT]);
 
         match idx % 4 {
             0 => rect.coord([0., 0.]),
             1 => rect.coord([1., 0.]),
             2 => rect.coord([1., 1.]),
             3 => rect.coord([0., 1.]),
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 
@@ -104,7 +105,7 @@ impl Cube {
                             Vertex {
                                 pos: self.vert(i),
                                 normal: no,
-                                uv: self.uv(i)
+                                uv: self.uv(i),
                             }
                         })
     }
@@ -135,7 +136,7 @@ impl SharedVertex<Vertex> for Cube {
         Vertex {
             pos: self.vert(vid),
             normal: no,
-            uv: self.uv(idx)
+            uv: self.uv(idx),
         }
     }
 

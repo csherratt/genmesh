@@ -21,8 +21,7 @@ use super::generators::{SharedVertex, IndexedPolygon};
 /// Represents a sphere with radius of 1, centered at (0, 0, 0)
 #[derive(Clone, Copy)]
 pub struct SphereUV {
-    u: usize,
-    v: usize,
+    idx: usize,
     sub_u: usize,
     sub_v: usize,
 }
@@ -34,9 +33,8 @@ impl SphereUV {
     pub fn new(u: usize, v: usize) -> Self {
         assert!(u > 1 && v > 1);
         SphereUV {
-            u: 0,
-            v: 0,
-            sub_u: u,
+            idx: 0,
+            sub_u: u + 1, // add one for the seam
             sub_v: v,
         }
     }
@@ -48,7 +46,11 @@ impl SphereUV {
         let v = v_per * PI;
 
         let p = [u.cos() * v.sin(), u.sin() * v.sin(), v.cos()];
-        Vertex { pos: p, normal: p, uv: [u_per, v_per] }
+        Vertex {
+            pos: p,
+            normal: p,
+            uv: [u_per, v_per],
+        }
     }
 }
 
@@ -109,7 +111,8 @@ impl SharedVertex<Vertex> for SphereUV {
     }
 
     fn shared_vertex_count(&self) -> usize {
-        (self.sub_v - 1) * (self.sub_u) + 2
+        // there is always an extra set of polar coords for the seam
+        (self.sub_v - 1) * self.sub_u + 2
     }
 }
 

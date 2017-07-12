@@ -76,7 +76,7 @@ impl Cone {
                     normal: [pos.cos() * FRAC_1_SQRT_2,
                              pos.sin() * FRAC_1_SQRT_2,
                              -FRAC_1_SQRT_2],
-                    uv: UVCircle::new(UV_TOP_CENTER, UV_RADIUS).coord(pos)
+                    uv: UVCircle::new(UV_TOP_CENTER, UV_RADIUS).coord(pos),
                 }
             }
             VertexSection::BottomRadius(i) => {
@@ -84,7 +84,7 @@ impl Cone {
                 Vertex {
                     pos: [pos.cos(), pos.sin(), -1.],
                     normal: [0., 0., -1.],
-                    uv: UVCircle::new(UV_BOTTOM_CENTER, UV_RADIUS).coord(pos)
+                    uv: UVCircle::new(UV_BOTTOM_CENTER, UV_RADIUS).coord(pos),
                 }
             }
             VertexSection::BottomCenter => {

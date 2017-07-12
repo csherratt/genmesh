@@ -82,5 +82,5 @@ pub struct Vertex {
     /// Vertex normal
     pub normal: Normal,
     /// Vertex UV, texture coordinate
-    pub uv: UV
+    pub uv: UV,
 }

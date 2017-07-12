@@ -17,14 +17,14 @@ use mint::Vector2;
 /// This is a UV rectangle
 pub struct UVRect {
     offset: Vector2<f32>,
-    scale: Vector2<f32>
+    scale: Vector2<f32>,
 }
 
 impl UVRect {
     pub fn new(offset: Vector2<f32>, scale: Vector2<f32>) -> Self {
-        UVRect{
+        UVRect {
             offset: offset,
-            scale: scale
+            scale: scale,
         }
     }
 
@@ -37,14 +37,14 @@ impl UVRect {
 /// This is a UVCircle
 pub struct UVCircle {
     offset: Vector2<f32>,
-    radius: f32
+    radius: f32,
 }
 
 impl UVCircle {
     pub fn new(offset: Vector2<f32>, radius: f32) -> Self {
-        UVCircle{
+        UVCircle {
             offset: offset,
-            radius: radius
+            radius: radius,
         }
     }
 

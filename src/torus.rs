@@ -85,7 +85,7 @@ impl SharedVertex<Vertex> for Torus {
                                  -alpha.cos() * beta.sin())
                     .normalize()
                     .into(),
-            uv: [u_per, h_per]
+            uv: [u_per, h_per],
         }
     }
 

@@ -70,7 +70,7 @@ impl Cylinder {
             let uv = UVCircle::new(UV_BOTTOM_CENTER, UV_RADIUS).coord(a);
             (0, [0., 0., -1.], uv)
         } else if h > self.sub_h {
-            // top 
+            // top
             debug_assert_eq!(h, self.sub_h + 1);
             let uv = UVCircle::new(UV_TOP_CENTER, UV_RADIUS).coord(a);
             (self.sub_h, [0., 0., 1.], uv)
